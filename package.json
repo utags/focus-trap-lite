@@ -1,0 +1,57 @@
+{
+  "name": "focus-trap-lite",
+  "version": "0.0.4",
+  "description": "Lightweight (≤2kB) focus trapping utility for implementing accessible keyboard navigation constraints in modal dialogs, sidebars, and other contained UI components.",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "scripts": {
+    "p": "prettier --write .",
+    "lint": "prettier --write . && xo --fix",
+    "test": "echo done"
+  },
+  "keywords": [
+    "focus trap",
+    "focusable",
+    "focus",
+    "accessibility",
+    "a11y",
+    "trap",
+    "capture",
+    "keyboard",
+    "modal",
+    "dialog",
+    "sidebar"
+  ],
+  "author": "Pipecraft",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/utags/focus-trap-lite/issues"
+  },
+  "homepage": "https://github.com/utags/focus-trap-lite#readme",
+  "devDependencies": {
+    "prettier": "^3.5.3",
+    "xo": "^0.60.0"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "xo": {
+    "space": 2,
+    "prettier": true,
+    "globals": [
+      "document"
+    ],
+    "envs": [
+      "browser"
+    ],
+    "rules": {
+      "capitalized-comments": 0
+    }
+  }
+}
