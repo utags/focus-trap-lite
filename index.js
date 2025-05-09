@@ -28,7 +28,7 @@ const resetFocusableElements = () => {
     )
   ).filter((element) => {
     return (
-      (element.offsetWidth > 0 || element.offsetHeight > 0) &&
+      // (element.offsetWidth > 0 || element.offsetHeight > 0) &&
       element.disabled !== true
     )
   })
@@ -86,17 +86,23 @@ const handleKeyDown = (event) => {
       return
     }
 
-    // After click adress bar or developer tool, the document.activeElement will be empty, so we need to init it again
-    if (!focusableElements.includes(document.activeElement)) {
+    const activeElement = document.activeElement
+
+    // When user clicks on address bar or developer tools, document.activeElement becomes null, requiring re-initialization
+    // If the previously active element was removed from DOM, activeElement defaults to document.body - use default behavior
+    if (
+      !focusableElements.includes(activeElement) &&
+      activeElement !== document.body
+    ) {
       initFocusableElements()
     }
 
     if (event.shiftKey) {
-      if (document.activeElement === firstFocusableElement) {
+      if (activeElement === firstFocusableElement) {
         lastFocusableElement.focus()
         event.preventDefault()
       }
-    } else if (document.activeElement === lastFocusableElement) {
+    } else if (activeElement === lastFocusableElement) {
       firstFocusableElement.focus()
       event.preventDefault()
     }
