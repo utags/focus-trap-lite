@@ -1,6 +1,6 @@
 {
   "name": "focus-trap-lite",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Lightweight (≤2kB) focus trapping utility for implementing accessible keyboard navigation constraints in modal dialogs, sidebars, and other contained UI components.",
   "type": "module",
   "main": "index.js",
