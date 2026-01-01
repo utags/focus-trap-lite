@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Focus Trap Hidden Elements Test</title>
+  </head>
+  <body>
+    <div id="trap">
+      <button id="btn1">Button 1</button>
+
+      <!-- Hidden by display: none -->
+      <button id="btn-hidden" style="display: none">Hidden Button</button>
+
+      <!-- Hidden by visibility: hidden -->
+      <button id="btn-invisible" style="visibility: hidden">
+        Invisible Button
+      </button>
+
+      <!-- Hidden by zero dimensions -->
+      <button
+        id="btn-zero-size"
+        style="width: 0; height: 0; border: none; padding: 0; overflow: hidden">
+        Zero Size Button
+      </button>
+
+      <!-- Normal button -->
+      <button id="btn2">Button 2</button>
+    </div>
+    <button id="outside">Outside</button>
+
+    <script type="module">
+      import { initFocusTrap } from './index.js'
+
+      const container = document.getElementById('trap')
+
+      console.log('Initializing trap...')
+      initFocusTrap(container, null, { focus: true })
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          setTimeout(() => {
+            const active = document.activeElement
+            console.log('Active Element:', active.id)
+
+            if (
+              active.id === 'btn-hidden' ||
+              active.id === 'btn-invisible' ||
+              active.id === 'btn-zero-size'
+            ) {
+              console.error('FAIL: Focused on hidden element:', active.id)
+            }
+          }, 0)
+        }
+      })
+    </script>
+  </body>
+</html>

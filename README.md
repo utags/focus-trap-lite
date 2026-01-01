@@ -30,52 +30,79 @@ import { initFocusTrap } from 'focus-trap-lite'
 
 // Initialize trap on modal open
 function openModal() {
-  initFocusTrap(modalElement, '.focusable')
+  const trap = initFocusTrap(modalElement)
+
   // Add your modal opening logic
+
+  // Clean up manually if needed
+  // trap.destroy()
 }
 
 // Trap automatically cleans up when:
-// - User closes modal
-// - Focus escapes trap boundaries
+// - User closes modal (Escape key)
+// - Focus escapes trap boundaries (if logic allows)
 // - Component unmounts
 ```
 
 ### Advanced Configuration
 
 ```javascript
-// Container element with custom selector
-initFocusTrap(document.querySelector('#modal-container'), '.custom-focusable')
+// Container element with custom selector and options
+initFocusTrap(document.querySelector('#modal-container'), '.custom-focusable', {
+  focus: true, // Auto-focus on initialization
+  firstFocusableElement: '#first-input', // Specific start element
+})
 
-// Custom selector for focusable elements
-initFocusTrap(null, '#modal .focusable')
-
-// Container element with default selector
-initFocusTrap(document.querySelector('.sidebar'))
-
-// Default selector includes standard focusable elements:
-// 'a, button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])'
+// Nested Modals support
+// The library maintains a stack of active traps.
+// When a new trap is initialized, it takes precedence.
+// When destroyed (e.g. via Escape), focus control returns to the previous trap.
 ```
 
 ## API
 
-### initFocusTrap(container?, selector?)
+### initFocusTrap(element?, selector?, options?)
 
-| Parameter | Type      | Description                                                                                             |
-| --------- | --------- | ------------------------------------------------------------------------------------------------------- |
-| container | `Element` | _(Optional)_ DOM element to scope the focus trap. When omitted, uses document.body                      |
-| selector  | `string`  | _(Optional)_ CSS selector for focusable elements within container. Default: standard focusable elements |
+| Parameter                     | Type                  | Description                                                                                             |
+| ----------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------- |
+| element                       | `Element`             | _(Optional)_ DOM element to scope the focus trap. When omitted, uses document.body                      |
+| selector                      | `string`              | _(Optional)_ CSS selector for focusable elements within container. Default: standard focusable elements |
+| options                       | `Object`              | _(Optional)_ Configuration object                                                                       |
+| options.focus                 | `boolean`             | Auto-focus the first element on initialization. Default: `false`                                        |
+| options.firstFocusableElement | `HTMLElement\|string` | Element to focus initially. Can be a selector string or DOM element.                                    |
+
+**Returns:**
+
+```javascript
+{
+  destroy: () => void,     // Manually destroy the trap
+  container: HTMLElement   // The container element
+}
+```
 
 **Behavior:**
 
-- Creates keyboard navigation constraints
+- Creates keyboard navigation constraints (Tab / Shift+Tab)
 - Handles boundary focus wrapping
-- Automatic cleanup triggers:
-  - When trapped container is removed from DOM
-  - When calling function returns
-  - On Escape key press
-- Dynamic element support
-- Focus restoration
-- ARIA role management
+- **Nested Traps:** Supports multiple stacked traps (LIFO)
+- **Auto Cleanup:**
+  - On `Escape` key press
+  - When calling `destroy()`
+  - When calling function returns (if implicit, though manual destroy is recommended for SPAs)
+- **Smart Filtering:** Ignores hidden, invisible, or `tabindex="-1"` elements
+
+## Changelog
+
+### v0.1.0
+
+- **Breaking Change:** `initFocusTrap` now returns an object `{ destroy, container }` instead of `void`.
+- **New Feature:** Added `options` parameter.
+  - `options.focus`: Auto-focus support.
+  - `options.firstFocusableElement`: Custom initial focus target.
+- **New Feature:** Nested focus traps support (Stack-based).
+- **New Feature:** `Escape` key support for closing the trap.
+- **Improvement:** Better filtering of non-focusable elements (hidden, zero-size, `tabindex="-1"`).
+- **Improvement:** Optimized internal logic and variable naming.
 
 ## Browser Support
 

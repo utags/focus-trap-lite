@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nested Focus Trap Test</title>
+    <style>
+      .modal {
+        border: 2px solid black;
+        padding: 20px;
+        margin: 20px;
+        background: #f0f0f0;
+      }
+      .active {
+        border-color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="main-btn">Main Button</button>
+
+    <div id="modal-a" class="modal">
+      <h2>Modal A</h2>
+      <button id="btn-a1">A1</button>
+      <button id="btn-a2">A2</button>
+      <button id="open-b">Open Modal B</button>
+      <button id="close-a">Close Modal A</button>
+    </div>
+
+    <div id="modal-b" class="modal" style="display: none">
+      <h2>Modal B</h2>
+      <button id="btn-b1">B1</button>
+      <button id="btn-b2">B2</button>
+      <button id="close-b">Close Modal B</button>
+    </div>
+
+    <script type="module">
+      import { initFocusTrap } from './index.js'
+
+      const modalA = document.getElementById('modal-a')
+      const modalB = document.getElementById('modal-b')
+
+      const openB = document.getElementById('open-b')
+      const closeA = document.getElementById('close-a')
+      const closeB = document.getElementById('close-b')
+
+      // Init Trap for A
+      console.log('Init Trap A')
+      initFocusTrap(modalA, null, {
+        focus: true,
+        firstFocusableElement: '#btn-a1',
+      })
+
+      openB.addEventListener('click', () => {
+        modalB.style.display = 'block'
+        console.log('Init Trap B')
+        initFocusTrap(modalB, null, {
+          focus: true,
+          firstFocusableElement: '#btn-b1',
+        })
+      })
+
+      closeB.addEventListener('click', () => {
+        modalB.style.display = 'none' // Will trigger destroy on next Tab
+        console.log('Closed B')
+        // We need to verify if focus returns to A logic.
+        // Since elements are hidden, trap B should self-destruct on next interaction.
+        // But ideally we want to focus back to A immediately?
+        // The trap library doesn't handle "restore focus", it just handles trapping.
+        // So manually focusing back to A trigger.
+        openB.focus()
+      })
+
+      closeA.addEventListener('click', () => {
+        modalA.style.display = 'none'
+        console.log('Closed A')
+        document.getElementById('main-btn').focus()
+      })
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          console.log('Tab pressed. Active Element:', document.activeElement.id)
+        }
+      })
+    </script>
+  </body>
+</html>

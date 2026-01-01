@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Focus Trap TabIndex Test</title>
+  </head>
+  <body>
+    <div id="trap">
+      <button id="btn1">Button 1</button>
+      <button id="btn2" tabindex="-1">Button 2 (tabindex -1)</button>
+      <a href="#" id="link1">Link 1</a>
+      <a href="#" id="link2" tabindex="-1">Link 2 (tabindex -1)</a>
+      <input type="text" id="input1" />
+      <input
+        type="text"
+        id="input2"
+        tabindex="-1"
+        value="Input 2 (tabindex -1)" />
+      <button id="btn3">Button 3</button>
+    </div>
+    <button id="outside">Outside</button>
+
+    <script type="module">
+      import { initFocusTrap } from './index.js'
+
+      const container = document.getElementById('trap')
+
+      console.log('Initializing trap...')
+      initFocusTrap(container, null, { focus: true })
+
+      // Helper to check focusable elements manually
+      // Since we can't easily access the internal focusableElements array from outside without exposing it,
+      // we can test by tabbing through.
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          // We rely on the trap logic.
+          // If we tab from btn1, it should skip btn2 and go to link1.
+          setTimeout(() => {
+            console.log(
+              'Active Element:',
+              document.activeElement.id,
+              'TabIndex:',
+              document.activeElement.tabIndex
+            )
+            if (document.activeElement.tabIndex === -1) {
+              console.error('FAIL: Focused on element with tabindex -1')
+            }
+          }, 0)
+        }
+      })
+    </script>
+  </body>
+</html>

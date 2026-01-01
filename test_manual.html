@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Focus Trap Test</title>
+  </head>
+  <body>
+    <div id="trap">
+      <button id="btn1">Button 1</button>
+      <button id="btn2">Button 2</button>
+      <button id="btn3">Button 3</button>
+    </div>
+    <button id="outside">Outside</button>
+
+    <script type="module">
+      import { initFocusTrap } from './index.js'
+
+      const container = document.getElementById('trap')
+      const btn1 = document.getElementById('btn1')
+      const btn2 = document.getElementById('btn2')
+      const btn3 = document.getElementById('btn3')
+      const outside = document.getElementById('outside')
+
+      console.log('--- TEST START ---')
+
+      // Test 1: Basic Init (default behavior)
+      console.log('Test 1: Basic Init (no focus)')
+      outside.focus()
+      initFocusTrap(container)
+      if (document.activeElement === outside) {
+        console.log('PASS: Did not focus automatically.')
+      } else {
+        console.error('FAIL: Focused automatically:', document.activeElement.id)
+      }
+
+      // Test 2: options.focus = true
+      console.log('Test 2: options.focus = true')
+      outside.focus()
+      initFocusTrap(container, null, { focus: true })
+      if (document.activeElement === btn1) {
+        console.log('PASS: Focused on first element (btn1).')
+      } else {
+        console.error('FAIL: Expected btn1, got:', document.activeElement.id)
+      }
+
+      // Test 3: options.firstFocusableElement = selector (valid)
+      console.log('Test 3: firstFocusableElement = "#btn2"')
+      outside.focus()
+      initFocusTrap(container, null, {
+        focus: true,
+        firstFocusableElement: '#btn2',
+      })
+      if (document.activeElement === btn2) {
+        console.log('PASS: Focused on btn2.')
+      } else {
+        console.error('FAIL: Expected btn2, got:', document.activeElement.id)
+      }
+
+      // Test 4: options.firstFocusableElement = selector (invalid) -> fallback
+      console.log(
+        'Test 4: firstFocusableElement = "#invalid" (fallback to btn1)'
+      )
+      outside.focus()
+      initFocusTrap(container, null, {
+        focus: true,
+        firstFocusableElement: '#invalid',
+      })
+      if (document.activeElement === btn1) {
+        console.log('PASS: Fallback to btn1.')
+      } else {
+        console.error('FAIL: Expected btn1, got:', document.activeElement.id)
+      }
+
+      // Test 5: options.firstFocusableElement = element (valid)
+      console.log('Test 5: firstFocusableElement = btn3')
+      outside.focus()
+      initFocusTrap(container, null, {
+        focus: true,
+        firstFocusableElement: btn3,
+      })
+      if (document.activeElement === btn3) {
+        console.log('PASS: Focused on btn3.')
+      } else {
+        console.error('FAIL: Expected btn3, got:', document.activeElement.id)
+      }
+
+      // Test 6: options.firstFocusableElement = element (invalid, outside container) -> fallback
+      console.log('Test 6: firstFocusableElement = outside (fallback to btn1)')
+      outside.focus()
+      initFocusTrap(container, null, {
+        focus: true,
+        firstFocusableElement: outside,
+      })
+      if (document.activeElement === btn1) {
+        console.log('PASS: Fallback to btn1.')
+      } else {
+        console.error('FAIL: Expected btn1, got:', document.activeElement.id)
+      }
+
+      console.log('--- TEST END ---')
+    </script>
+  </body>
+</html>
